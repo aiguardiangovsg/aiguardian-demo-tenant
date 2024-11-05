@@ -7,23 +7,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-benchmark:
+  run-litmus-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-
-      - name: Run Benchmark
+      - name: Run Litmus Test
         uses: dsaidgovsg/aiguardian-litmus-test@v0.0.13
         with:
           base_url: ${{ vars.LITMUS_BASE_URL }}
