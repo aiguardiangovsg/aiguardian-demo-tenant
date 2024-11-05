@@ -24,7 +24,7 @@ jobs:
           pip install requests
 
       - name: Run Benchmark
-        uses: dsaidgovsg/aiguardian-litmus-test@v0.0.8
+        uses: dsaidgovsg/aiguardian-litmus-test@v0.0.9
         with:
           base_url: ${{ vars.LITMUS_BASE_URL }}
           run_name: ${{ github.run_id }}-${{ github.run_attempt }}
