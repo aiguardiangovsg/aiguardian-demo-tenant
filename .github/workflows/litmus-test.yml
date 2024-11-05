@@ -24,7 +24,7 @@ jobs:
           pip install requests
 
       - name: Run Benchmark
-        uses: dsaidgovsg/aiguardian-litmus-test@v0.0.11
+        uses: dsaidgovsg/aiguardian-litmus-test@vv0.0.12
         with:
           base_url: ${{ vars.LITMUS_BASE_URL }}
           run_name: ${{ github.run_id }}-${{ github.run_attempt }}
@@ -32,4 +32,4 @@ jobs:
           cookbook: ${{ vars.COOKBOOK }}
           num_of_prompts: ${{ vars.NUM_OF_PROMPTS || '1'}}
           api_key: ${{ secrets.LITMUS_KEY }}
-          debug_mode: ${{ vars.DEBUG_MODE == 'true' || false }}
+          debug_mode: 'FALSE'
