@@ -32,4 +32,4 @@ jobs:
           cookbook: ${{ vars.COOKBOOK }}
           num_of_prompts: ${{ vars.NUM_OF_PROMPTS || '1'}}
           api_key: ${{ secrets.LITMUS_KEY }}
-          debug_mode: ${{ vars.DEBUG_MODE || 'false' }}
+          debug_mode: ${{ vars.DEBUG_MODE == 'true' || false }}
