@@ -30,6 +30,6 @@ jobs:
           run_name: ${{ github.run_id }}-${{ github.run_attempt }}
           endpoint: ${{ vars.ENDPOINT }}
           cookbook: ${{ vars.COOKBOOK }}
-          num_of_prompts: ${{ vars.NUM_OF_PROMPTS || '1'}}
+          num_of_prompts: ${{ vars.NUM_OF_PROMPTS || '0'}}
           api_key: ${{ secrets.LITMUS_KEY }}
           debug_mode: 'FALSE'
