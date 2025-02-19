@@ -174,14 +174,15 @@ def main():
     headers = create_headers(api_key)
 
     data = {
+        "base_url": base_url,
         "run_name": run_name,
         "endpoint": endpoint,
-        "test_suites": [input_value],
+        "test_suites": input_value.split(","),
         "num_of_prompts": num_of_prompts,
     }
 
     log(
-        f"Starting Litmus Test with the following data: {json.dumps(data, indent=2)}"  # noqa: E501
+        f"Starting Litmus Test with the following data: \n{json.dumps(data, indent=2)}"  # noqa: E501
     )
     run_id = start_litmus_test(base_url, data, headers)
 
