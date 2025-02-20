@@ -5,6 +5,11 @@ on:
     branches:
       - '*'
   workflow_dispatch:
+    inputs:
+      endpoint:
+        description: "Endpoint Name"
+        required: false
+        default: "${{ vars.ENDPOINT }}"
 
 jobs:
   run-litmus-test:
@@ -31,7 +36,7 @@ jobs:
           python benchmark.py \
             "${{ vars.LITMUS_BASE_URL }}" \
             "run_${{ github.run_id }}_${{ github.run_attempt }}" \
-            "${{ vars.ENDPOINT }}" \
+            "${{ github.event.inputs.endpoint || vars.ENDPOINT }}" \
             "${{ vars.TEST_SUITES }}" \
             "${{ vars.NUM_OF_PROMPTS || '0'}}" \
             "${{ secrets.LITMUS_API_KEY }}"\
