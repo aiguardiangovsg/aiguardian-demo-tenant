@@ -9,7 +9,6 @@ on:
       endpoint:
         description: "Endpoint Name"
         required: false
-        default: "${{ vars.ENDPOINT }}"
 
 jobs:
   run-litmus-test:
