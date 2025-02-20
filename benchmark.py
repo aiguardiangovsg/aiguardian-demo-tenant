@@ -47,12 +47,12 @@ def make_request(method, url, headers, data=None, params=None, type="json"):
 
 
 def start_litmus_test(base_url, data, headers):
-    url = urljoin(base_url, "/api/testRuns")
+    url = urljoin(base_url, "/api/v1/testRuns")
     response_json = make_request("POST", url, headers, data=data)
 
     log(f"Response JSON: {response_json}")
 
-    run_id = response_json.get("id")
+    run_id = response_json.get("data", {}).get("id")
 
     log(f"Run ID: {run_id}")
 
@@ -64,7 +64,7 @@ def start_litmus_test(base_url, data, headers):
 
 
 def check_litmus_test_status(base_url, run_id, headers):
-    url = urljoin(base_url, f"/api/testRuns/{run_id}")
+    url = urljoin(base_url, f"/api/v1/testRuns/{run_id}")
 
     log("Checking status")
     response_json = make_request("GET", url, headers)
@@ -73,9 +73,9 @@ def check_litmus_test_status(base_url, run_id, headers):
 
 
 def get_litmus_test_results(base_url, run_id, headers, api_key):
-    url = urljoin(base_url, f"/api/testResults/{run_id}?format=json")
+    url = urljoin(base_url, f"/api/v1/testResults/{run_id}?format=json")
     response_json = make_request("GET", url, headers)
-    url = urljoin(base_url, f"/api/testResults/{run_id}?format=html")
+    url = urljoin(base_url, f"/api/v1/testResults/{run_id}?format=html")
     response_html = make_request("GET", url, headers, type="html")
 
     dirname = "litmus_test_results"
@@ -174,15 +174,14 @@ def main():
     headers = create_headers(api_key)
 
     data = {
-        "base_url": base_url,
         "run_name": run_name,
         "endpoint": endpoint,
-        "test_suites": input_value.split(","),
+        "test_suites": [input_value],
         "num_of_prompts": num_of_prompts,
     }
 
     log(
-        f"Starting Litmus Test with the following data: \n{json.dumps(data, indent=2)}"  # noqa: E501
+        f"Starting Litmus Test with the following data: {json.dumps(data, indent=2)}"  # noqa: E501
     )
     run_id = start_litmus_test(base_url, data, headers)
 
