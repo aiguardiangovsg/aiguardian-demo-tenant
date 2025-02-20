@@ -34,7 +34,9 @@ jobs:
             "${{ vars.ENDPOINT }}" \
             "${{ vars.TEST_SUITES }}" \
             "${{ vars.NUM_OF_PROMPTS || '0'}}" \
-            "${{ secrets.LITMUS_API_KEY }}"
+            "${{ secrets.LITMUS_API_KEY }}"\
+            "${{ vars.INTERVAL || '10' }}" \
+            "${{ vars.TIMEOUT || '180'}}"
 
       - name: Upload Litmus Test Results
         uses: actions/upload-artifact@v4
