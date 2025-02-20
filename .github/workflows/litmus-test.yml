@@ -24,12 +24,14 @@ jobs:
           pip install requests
 
       - name: Run Litmus Test
-        uses: dsaidgovsg/aiguardian-litmus-test@v0.0.13
-        with:
-          base_url: ${{ vars.LITMUS_BASE_URL }}
-          run_name: ${{ github.run_id }}-${{ github.run_attempt }}
-          endpoint: ${{ vars.ENDPOINT }}
-          cookbook: ${{ vars.COOKBOOK }}
-          num_of_prompts: ${{ vars.NUM_OF_PROMPTS || '1'}}
-          api_key: ${{ secrets.LITMUS_KEY }}
-          debug_mode: 'FALSE'
+        shell: bash
+        env:
+          DEBUG: 'FALSE'
+        run: |
+          python benchmark.py \
+            "${{ vars.LITMUS_BASE_URL }}" \
+            "run_${{ github.run_id }}_${{ github.run_attempt }}" \
+            "${{ vars.ENDPOINT }}" \
+            "${{ vars.TEST_SUITES }}" \
+            "${{ vars.NUM_OF_PROMPTS || '0'}}" \
+            "${{ secrets.LITMUS_API_KEY }}"
