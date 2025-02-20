@@ -9,6 +9,9 @@ on:
       endpoint:
         description: "Endpoint Name"
         required: false
+      num_of_prompts:
+        description: "Number of Prompts"
+        required: false
 
 jobs:
   run-litmus-test:
@@ -37,7 +40,7 @@ jobs:
             "run_${{ github.run_id }}_${{ github.run_attempt }}" \
             "${{ github.event.inputs.endpoint || vars.ENDPOINT }}" \
             "${{ vars.TEST_SUITES }}" \
-            "${{ vars.NUM_OF_PROMPTS || '0'}}" \
+            "${{ github.event.inputs.num_of_prompts || vars.NUM_OF_PROMPTS}}" \
             "${{ secrets.LITMUS_API_KEY }}"\
             "${{ vars.INTERVAL || '10' }}" \
             "${{ vars.TIMEOUT || '180'}}"
