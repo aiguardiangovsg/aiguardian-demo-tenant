@@ -35,3 +35,9 @@ jobs:
             "${{ vars.TEST_SUITES }}" \
             "${{ vars.NUM_OF_PROMPTS || '0'}}" \
             "${{ secrets.LITMUS_API_KEY }}"
+
+      - name: Upload Litmus Test Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: litmus-test-results
+          path: litmus_test_results
