@@ -47,7 +47,7 @@ def make_request(method, url, headers, data=None, params=None, type="json"):
 
 
 def start_litmus_test(base_url, data, headers):
-    url = urljoin(base_url, "/api/v1/testRuns")
+    url = urljoin(base_url, "/testRuns")
     response_json = make_request("POST", url, headers, data=data)
 
     log(f"Response JSON: {response_json}")
@@ -64,7 +64,7 @@ def start_litmus_test(base_url, data, headers):
 
 
 def check_litmus_test_status(base_url, run_id, headers):
-    url = urljoin(base_url, f"/api/v1/testRuns/{run_id}")
+    url = urljoin(base_url, f"/testRuns/{run_id}")
 
     log("Checking status")
     response_json = make_request("GET", url, headers)
@@ -73,9 +73,9 @@ def check_litmus_test_status(base_url, run_id, headers):
 
 
 def get_litmus_test_results(base_url, run_id, headers, api_key):
-    url = urljoin(base_url, f"/api/v1/testResults/{run_id}?format=json")
+    url = urljoin(base_url, f"/testResults/{run_id}?format=json")
     response_json = make_request("GET", url, headers)
-    url = urljoin(base_url, f"/api/v1/testResults/{run_id}?format=html")
+    url = urljoin(base_url, f"/testResults/{run_id}?format=html")
     response_html = make_request("GET", url, headers, type="html")
 
     dirname = "litmus_test_results"
