@@ -179,6 +179,7 @@ def main():
         "endpoint": endpoint,
         "test_suites": [input_value],
         "num_of_prompts": num_of_prompts,
+        "timeout_in_seconds": timeout,
     }
 
     log(
