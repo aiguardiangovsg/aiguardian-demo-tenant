@@ -46,7 +46,7 @@ jobs:
         run: |
           python benchmark.py \
             "${{ vars.LITMUS_BASE_URL }}" \
-            "run_${{ github.run_id }}_${{ github.run_attempt }}" \
+            "github-run" \
             "${{ github.event.inputs.endpoint || vars.ENDPOINT }}" \
             "${{ github.event.inputs.test_suites || vars.TEST_SUITES }}" \
             "${{ github.event.inputs.num_of_prompts || vars.NUM_OF_PROMPTS}}" \
