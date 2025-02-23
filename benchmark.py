@@ -129,6 +129,7 @@ def validate_and_get_args():
         sys.argv[1:7]
     )
 
+    num_of_prompts = int(num_of_prompts)
     interval = int(sys.argv[7]) if len(sys.argv) > 7 else 10
     timeout = int(sys.argv[8]) if len(sys.argv) > 8 else 1800
 
