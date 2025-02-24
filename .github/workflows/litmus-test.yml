@@ -1,4 +1,4 @@
-name: 'Litmus Test - ${{github.event.inputs.endpoint||vars.ENDPOINT}} - ${{github.event.inputs.test_suites||vars.TEST_SUITES}} - ${{github.event.inputs.num_of_prompts||vars.NUM_OF_PROMPTS}}'
+name: Litmus Test
 
 on:
   push:
@@ -39,7 +39,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Run Litmus Test
+      - name: 'Litmus Test - ${{github.event.inputs.endpoint||vars.ENDPOINT}} - ${{github.event.inputs.test_suites||vars.TEST_SUITES}} - ${{github.event.inputs.num_of_prompts||vars.NUM_OF_PROMPTS}}'
         shell: bash
         env:
           DEBUG: 'FALSE'
