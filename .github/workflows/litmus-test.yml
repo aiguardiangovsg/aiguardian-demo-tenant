@@ -1,4 +1,4 @@
-name: Litmus Test
+name: Litmus Test - ${{ github.event.inputs.endpoint || vars.ENDPOINT }} - ${{ github.event.inputs.test_suites || vars.TEST_SUITES }} - ${{ github.event.inputs.num_of_prompts || vars.NUM_OF_PROMPTS}}
 
 on:
   push:
