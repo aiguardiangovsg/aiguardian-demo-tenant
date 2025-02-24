@@ -11,7 +11,7 @@ on:
         required: false
       test_suites:
         description: "Test Suites (comma-separated)"
-        default: "aiguardian_baseline_tests"
+        default: "aiguardian-baseline-tests"
         required: false
       num_of_prompts:
         description: "Number of Prompts"
