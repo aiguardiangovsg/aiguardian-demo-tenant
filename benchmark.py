@@ -241,9 +241,14 @@ def main():
     log("Fetching results of the test")
     get_litmus_test_results(base_url, run_id, headers, api_key)
 
+    end_time = time.monotonic()
+    elapsed_time = end_time - start_time
+    base_domain = base_url.split("//")[1].split("/")[0]
+
     log(
-        f"Test completed successfully in {time.monotonic() - start_time:.0f}s. The result can be viewed online at {base_url}/test-runs/{run_id}"  # noqa: E501
+        f"Test completed successfully in {elapsed_time:.0f}s. The result can be viewed online at https://{base_domain}/test-runs/{run_id}"  # noqa: E501
     )
+
 
 
 if __name__ == "__main__":
