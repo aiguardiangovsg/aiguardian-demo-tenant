@@ -27,7 +27,7 @@ The project includes a GitHub Actions workflow file (`.github/workflows/litmus-t
 Set up the following repository variables and secrets in your GitHub repository:
 
 **Variables:**
-- `LITMUS_BASE_URL`: The base URL of your Litmus API including version (e.g.: "https://litmus-api-base-url/api/v1")
+- `LITMUS_BASE_URL`: The base URL of your Litmus API including version (e.g.: "https://litmus-api-base-domain/api/v1")
 - `ENDPOINT`: The endpoint to test (e.g.: "your-endpoint-name")
 - `TEST_SUITES`: The test suites to run (e.g.: "aiguardian-baseline-tests")
 - `NUM_OF_PROMPTS`: Number of prompts to generate (e.g.: "5")
@@ -67,7 +67,7 @@ You can also run the benchmark script locally:
 
 ```bash
 python benchmark.py \
-  "https://litmus-api-base-url/api/v1" \
+  "https://litmus-api-base-domain/api/v1" \
   "test-run-name" \
   "your-endpoint-name" \
   "aiguardian-baseline-tests" \

@@ -1,0 +1,46 @@
+version: 0.2
+
+# Note: To run this build on a schedule (e.g. every Monday at 8am),
+# create an Amazon EventBridge rule with the schedule expression:
+#   cron(0 8 ? * MON *)
+# and set its target to trigger the CodeBuild project that uses this buildspec.
+
+env:
+  variables:
+    LITMUS_BASE_URL: "https://litmus-api-base-domain/api/v1"
+    ENDPOINT: "name-of-endpoint"
+    TEST_SUITES: "aiguardian-baseline-tests"
+    NUM_OF_PROMPTS: "5"
+    INTERVAL: "10"
+    TIMEOUT: "1800"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+      bash: 4.x
+    commands:
+      - echo "Installing dependencies..."
+      - pip install requests
+      - yum install -y jq
+      - echo "Fetching API key from AWS Secrets Manager..."
+      - export LITMUS_API_KEY=$(aws secretsmanager get-secret-value --secret-id litmus-api-key-secret --query SecretString --output text | jq -r '.API_KEY')
+      # Alternative using SSM Parameter Store:
+      # export LITMUS_API_KEY=$(aws ssm get-parameter --name /litmus/api-key --with-decryption --query Parameter.Value --output text)
+      - chmod +x benchmark.py
+
+  pre_build:
+    commands:
+      - echo "Starting pre-build phase..."
+      - export RUN_NAME="codebuild_${CODEBUILD_BUILD_ID}_${CODEBUILD_BUILD_NUMBER}"
+      - echo "Generated run name: $RUN_NAME"
+
+  build:
+    commands:
+      - echo "Starting tests..."
+      - ./benchmark.py "$LITMUS_BASE_URL" "$RUN_NAME" "$ENDPOINT" "$TEST_SUITES" "$NUM_OF_PROMPTS" "$LITMUS_API_KEY" "$INTERVAL" "$TIMEOUT"
+
+artifacts:
+  files:
+    - litmus_test_results/**/*
+  discard-paths: no
