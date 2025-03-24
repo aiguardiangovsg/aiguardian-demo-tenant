@@ -28,6 +28,10 @@ def make_request(method, url, headers, data=None, params=None, type="json"):
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")
 
+        if not response.ok:
+            error_msg = f"HTTP {response.status_code} Error: {response.text}"
+            log(error_msg)
+
         response.raise_for_status()
 
         if type != "json":
@@ -47,13 +51,13 @@ def make_request(method, url, headers, data=None, params=None, type="json"):
 
 
 def start_litmus_test(base_url, data, headers):
-    url = urljoin(base_url, "testRuns") # must be "testRuns" not "/testRuns"
-    
+    url = urljoin(base_url, "testRuns")  # must be "testRuns" not "/testRuns"
+
     response_json = make_request("POST", url, headers, data=data)
 
     log(f"Response JSON: {response_json}")
 
-    run_id = response_json.get("data", {}).get("id")
+    run_id = response_json.get("data", {}).get("id") or response_json.get("id")
 
     log(f"Run ID: {run_id}")
 
@@ -215,10 +219,13 @@ def main():
             "SKIPPED": "SKIPPED",
         }
 
-        if "status" in status_response:
-            final_status = status_response["status"]
+        response_data = status_response.get("data", {})
+        status = response_data.get(
+            "status", None) if response_data else status_response.get("status", None)
 
-            if status_response["status"] in [
+        if status is not None:
+
+            if status in [
                 LITMUS_TEST_STATUS["COMPLETED"],
                 LITMUS_TEST_STATUS["ABORTED"],
                 LITMUS_TEST_STATUS["ERRORED"],
@@ -229,7 +236,7 @@ def main():
 
         if attempt < max_attempts - 1:
             log(
-                f"Test is still running with status: {status_response['status']}. Checking again in {delay_seconds} seconds..."  # noqa: E501
+                f"Test is still running with status: {status}. Checking again in {delay_seconds} seconds..."  # noqa: E501
             )
             time.sleep(delay_seconds)
         else:
@@ -238,7 +245,7 @@ def main():
             )
             sys.exit(1)
 
-    log(f"Test was completed, final status: {final_status}")
+    log(f"Test was completed, final status: {status}")
 
     # Fetch the results if the benchmark completed successfully
     log("Fetching results of the test")
@@ -251,7 +258,6 @@ def main():
     log(
         f"Test completed successfully in {elapsed_time:.0f}s. The result can be viewed online at https://{base_domain}/test-runs/{run_id}"  # noqa: E501
     )
-
 
 
 if __name__ == "__main__":
