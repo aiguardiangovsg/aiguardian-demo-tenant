@@ -57,7 +57,7 @@ def start_litmus_test(base_url, data, headers):
 
     log(f"Response JSON: {response_json}")
 
-    run_id = response_json.get("data", {}).get("id")
+    run_id = response_json.get("data", {}).get("id") or response_json.get("id")
 
     log(f"Run ID: {run_id}")
 
@@ -183,7 +183,6 @@ def main():
     headers = create_headers(api_key)
 
     data = {
-        # "tenant_id": "9c1f4f58-c5ad-4fe3-bca4-c3f7878a5629",
         "run_name": run_name,
         "endpoint": endpoint,
         "test_suites": [input_value],
@@ -221,11 +220,12 @@ def main():
         }
 
         response_data = status_response.get("data", {})
+        status = response_data.get(
+            "status", None) if response_data else status_response.get("status", None)
 
-        if "status" in response_data:
-            final_status = response_data["status"]
+        if status is not None:
 
-            if response_data["status"] in [
+            if status in [
                 LITMUS_TEST_STATUS["COMPLETED"],
                 LITMUS_TEST_STATUS["ABORTED"],
                 LITMUS_TEST_STATUS["ERRORED"],
@@ -236,7 +236,7 @@ def main():
 
         if attempt < max_attempts - 1:
             log(
-                f"Test is still running with status: {response_data['status']}. Checking again in {delay_seconds} seconds..."  # noqa: E501
+                f"Test is still running with status: {status}. Checking again in {delay_seconds} seconds..."  # noqa: E501
             )
             time.sleep(delay_seconds)
         else:
@@ -245,7 +245,7 @@ def main():
             )
             sys.exit(1)
 
-    log(f"Test was completed, final status: {final_status}")
+    log(f"Test was completed, final status: {status}")
 
     # Fetch the results if the benchmark completed successfully
     log("Fetching results of the test")
