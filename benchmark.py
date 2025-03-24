@@ -28,6 +28,10 @@ def make_request(method, url, headers, data=None, params=None, type="json"):
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")
 
+        if not response.ok:
+            error_msg = f"HTTP {response.status_code} Error: {response.text}"
+            log(error_msg)
+
         response.raise_for_status()
 
         if type != "json":
@@ -47,8 +51,8 @@ def make_request(method, url, headers, data=None, params=None, type="json"):
 
 
 def start_litmus_test(base_url, data, headers):
-    url = urljoin(base_url, "testRuns") # must be "testRuns" not "/testRuns"
-    
+    url = urljoin(base_url, "testRuns")  # must be "testRuns" not "/testRuns"
+
     response_json = make_request("POST", url, headers, data=data)
 
     log(f"Response JSON: {response_json}")
@@ -179,6 +183,7 @@ def main():
     headers = create_headers(api_key)
 
     data = {
+        # "tenant_id": "9c1f4f58-c5ad-4fe3-bca4-c3f7878a5629",
         "run_name": run_name,
         "endpoint": endpoint,
         "test_suites": [input_value],
@@ -215,10 +220,12 @@ def main():
             "SKIPPED": "SKIPPED",
         }
 
-        if "status" in status_response:
-            final_status = status_response["status"]
+        response_data = status_response.get("data", {})
 
-            if status_response["status"] in [
+        if "status" in response_data:
+            final_status = response_data["status"]
+
+            if response_data["status"] in [
                 LITMUS_TEST_STATUS["COMPLETED"],
                 LITMUS_TEST_STATUS["ABORTED"],
                 LITMUS_TEST_STATUS["ERRORED"],
@@ -229,7 +236,7 @@ def main():
 
         if attempt < max_attempts - 1:
             log(
-                f"Test is still running with status: {status_response['status']}. Checking again in {delay_seconds} seconds..."  # noqa: E501
+                f"Test is still running with status: {response_data['status']}. Checking again in {delay_seconds} seconds..."  # noqa: E501
             )
             time.sleep(delay_seconds)
         else:
@@ -251,7 +258,6 @@ def main():
     log(
         f"Test completed successfully in {elapsed_time:.0f}s. The result can be viewed online at https://{base_domain}/test-runs/{run_id}"  # noqa: E501
     )
-
 
 
 if __name__ == "__main__":
