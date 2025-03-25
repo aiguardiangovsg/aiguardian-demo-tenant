@@ -1,0 +1,16 @@
+# Global stages for the pipeline
+stages:
+  - scheduled
+
+# Hourly scheduled job
+hourly-task:
+  stage: scheduled
+  # Use GitLab's predefined schedule syntax
+  rules:
+    # This rule ensures the job runs every hour
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+  # Example script (replace with your actual task)
+  script:
+    - echo "Running hourly task at $(date)"
+    - echo "Performing maintenance or data refresh"
