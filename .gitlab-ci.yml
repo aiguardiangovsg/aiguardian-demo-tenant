@@ -4,21 +4,8 @@ image: python:3.11
 stages:
   - scheduled
 
-# Hourly scheduled job
-hourly-task:
-  stage: scheduled
-  # Use GitLab's predefined schedule syntax
-  rules:
-    # This rule ensures the job runs every hour
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
-  # Example script (replace with your actual task)
-  script:
-    - echo "Running hourly task at $(date)"
-    - echo "Performing maintenance or data refresh"
-
 # Echo the current time on every branch
-litmus-test-dev:
+litmus-test:
   stage: scheduled
   script:
     - python -m venv venv
@@ -27,14 +14,14 @@ litmus-test-dev:
     - pip install requests
     - |
       python benchmark.py \
-        "$DEV_LITMUS_BASE_URL" \
+        "$LITMUS_BASE_URL" \
         "gitlab-run" \
-        "${DEV_ENDPOINT}" \
+        "${ENDPOINT}" \
         "${TEST_SUITES:-aiguardian-baseline-tests}" \
         "${NUM_OF_PROMPTS:-5}" \
-        "$DEV_LITMUS_API_KEY" \
+        "$LITMUS_API_KEY" \
         "${INTERVAL:-10}" \
-        "${TIMEOUT:-180}"
+        "${TIMEOUT:-600}"
   artifacts:
     paths:
       - litmus_test_results/
