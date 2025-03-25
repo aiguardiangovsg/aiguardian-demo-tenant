@@ -1,0 +1,44 @@
+name: dev - Govtext Litmus Test
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Every Day at 8am SGT
+  workflow_dispatch: {}
+
+jobs:
+  run-litmus-dev-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: "Litmus Test - 12fdde24-govtext - aiguardian-baseline-tests - 60"
+        shell: bash
+        env:
+          DEBUG: "FALSE"
+        run: |
+          python benchmark.py \
+            "${{ vars.DEV_LITMUS_BASE_URL }}" \
+            "github-run" \
+            "12fdde24-govtext" \
+            "aiguardian-baseline-tests" \
+            "60"\
+            "${{ secrets.DEV_LITMUS_API_KEY }}"\
+            "${{ vars.INTERVAL || '10' }}" \
+            "1800"
+
+      - name: Upload Litmus Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: litmus-dev-test-results
+          path: litmus_dev_test_results
