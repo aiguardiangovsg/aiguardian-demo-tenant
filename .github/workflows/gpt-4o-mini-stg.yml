@@ -1,4 +1,4 @@
-name: stg - Claude Sonnet Litmus Test
+name: stg - GPT 4o Litmus Test
 
 on:
   schedule:
