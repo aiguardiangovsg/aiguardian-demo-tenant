@@ -1,3 +1,5 @@
+image: python:3.x
+
 # Global stages for the pipeline
 stages:
   - scheduled
