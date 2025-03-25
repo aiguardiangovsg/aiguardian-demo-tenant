@@ -1,0 +1,141 @@
+image: python:3.x
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
+
+cache:
+  paths:
+    - .pip-cache/
+    - venv/
+
+stages:
+  - setup
+  - test
+
+# Setup stage to install dependencies
+setup:
+  stage: setup
+  script:
+    - python -m pip install --upgrade pip
+    - pip install requests
+  artifacts:
+    paths:
+      - venv/
+    expire_in: 1 week
+
+# Staging Environment Jobs
+claude-haiku-stg:
+  stage: test
+  script:
+    - source venv/bin/activate
+    - python benchmark.py "$LITMUS_BASE_URL" "gitlab-run" "claude-3-haiku-1" "aiguardian-baseline-tests" "60" "$LITMUS_API_KEY" "${INTERVAL:-10}" "600"
+  artifacts:
+    paths:
+      - litmus_test_results/
+    expire_in: 1 week
+  rules:
+    - when: schedule
+      cron: "0 0 * * 1"  # Every Monday 8am SGT
+    - when: manual
+
+claude-sonnet-stg:
+  stage: test
+  script:
+    - source venv/bin/activate
+    - python benchmark.py "$LITMUS_BASE_URL" "gitlab-run" "claude-3-5-sonnet-1" "aiguardian-baseline-tests" "60" "$LITMUS_API_KEY" "${INTERVAL:-10}" "1200"
+  artifacts:
+    paths:
+      - litmus_test_results/
+    expire_in: 1 week
+  rules:
+    - when: schedule
+      cron: "15 0 * * 1"  # Every Monday 8.15am SGT
+    - when: manual
+
+gpt-4o-stg:
+  stage: test
+  script:
+    - source venv/bin/activate
+    - python benchmark.py "$LITMUS_BASE_URL" "gitlab-run" "gpt-4o-1" "aiguardian-baseline-tests" "60" "$LITMUS_API_KEY" "${INTERVAL:-10}" "600"
+  artifacts:
+    paths:
+      - litmus_test_results/
+    expire_in: 1 week
+  rules:
+    - when: schedule
+      cron: "45 0 * * 1"  # Every Monday 8.45am SGT
+    - when: manual
+
+gpt-4o-mini-stg:
+  stage: test
+  script:
+    - source venv/bin/activate
+    - python benchmark.py "$LITMUS_BASE_URL" "gitlab-run" "gpt-4o-mini-1" "aiguardian-baseline-tests" "60" "$LITMUS_API_KEY" "${INTERVAL:-10}" "600"
+  artifacts:
+    paths:
+      - litmus_test_results/
+    expire_in: 1 week
+  rules:
+    - when: schedule
+      cron: "30 0 * * 1"  # Every Monday 8.30am SGT
+    - when: manual
+
+# Development Environment Jobs
+govtext-dev:
+  stage: test
+  script:
+    - source venv/bin/activate
+    - python benchmark.py "$DEV_LITMUS_BASE_URL" "gitlab-run" "12fdde24-govtext" "aiguardian-baseline-tests" "60" "$DEV_LITMUS_API_KEY" "${INTERVAL:-10}" "1800"
+  artifacts:
+    paths:
+      - litmus_dev_test_results/
+    expire_in: 1 week
+  rules:
+    - when: schedule
+      cron: "0 0 * * *"  # Every Day at 8am SGT
+    - when: manual
+
+# Dynamic Litmus Test Jobs
+litmus-test:
+  stage: test
+  script:
+    - source venv/bin/activate
+    - |
+      python benchmark.py \
+        "$LITMUS_BASE_URL" \
+        "gitlab-run" \
+        "${ENDPOINT:-$CI_COMMIT_REF_NAME}" \
+        "${TEST_SUITES:-aiguardian-baseline-tests}" \
+        "${NUM_OF_PROMPTS:-5}" \
+        "$LITMUS_API_KEY" \
+        "${INTERVAL:-10}" \
+        "${TIMEOUT:-180}"
+  artifacts:
+    paths:
+      - litmus_test_results/
+    expire_in: 1 week
+  rules:
+    - when: on_success
+    - when: manual
+
+litmus-test-dev:
+  stage: test
+  script:
+    - source venv/bin/activate
+    - |
+      python benchmark.py \
+        "$DEV_LITMUS_BASE_URL" \
+        "gitlab-run" \
+        "${DEV_ENDPOINT:-$CI_COMMIT_REF_NAME}" \
+        "${TEST_SUITES:-aiguardian-baseline-tests}" \
+        "${NUM_OF_PROMPTS:-5}" \
+        "$DEV_LITMUS_API_KEY" \
+        "${INTERVAL:-10}" \
+        "${TIMEOUT:-180}"
+  artifacts:
+    paths:
+      - litmus_dev_test_results/
+    expire_in: 1 week
+  rules:
+    - when: on_success
+    - when: manual 

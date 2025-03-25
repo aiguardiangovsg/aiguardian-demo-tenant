@@ -1,4 +1,4 @@
-image: python:3.x
+image: python:3.11
 
 # Global stages for the pipeline
 stages:
@@ -18,9 +18,26 @@ hourly-task:
     - echo "Performing maintenance or data refresh"
 
 # Echo the current time on every branch
-every-branch:
+litmus-test-dev:
   stage: scheduled
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
   script:
-    - echo "Running on every branch at $(date)"
+    - python -m venv venv
+    - source venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install requests
+    - |
+      python benchmark.py \
+        "$DEV_LITMUS_BASE_URL" \
+        "gitlab-run" \
+        "${DEV_ENDPOINT}" \
+        "${TEST_SUITES:-aiguardian-baseline-tests}" \
+        "${NUM_OF_PROMPTS:-5}" \
+        "$DEV_LITMUS_API_KEY" \
+        "${INTERVAL:-10}" \
+        "${TIMEOUT:-180}"
+  artifacts:
+    paths:
+      - litmus_dev_test_results/
+    expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
