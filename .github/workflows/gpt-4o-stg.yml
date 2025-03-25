@@ -1,0 +1,44 @@
+name: stg - Claude Sonnet Litmus Test
+
+on:
+  schedule:
+    - cron: "45 0 * * MON" # Every Monday 8.45am SGT
+  workflow_dispatch: {}
+
+jobs:
+  run-litmus-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: "Litmus Test - gpt-4o-1 - aiguardian-baseline-tests - 60"
+        shell: bash
+        env:
+          DEBUG: "FALSE"
+        run: |
+          python benchmark.py \
+            "${{ vars.LITMUS_BASE_URL }}" \
+            "github-run" \
+            "gpt-4o-1" \
+            "aiguardian-baseline-tests" \
+            "60" \
+            "${{ secrets.LITMUS_API_KEY }}"\
+            "${{ vars.INTERVAL || '10' }}" \
+            "600"
+
+      - name: Upload Litmus Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: litmus-test-results
+          path: litmus_test_results
