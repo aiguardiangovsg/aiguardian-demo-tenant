@@ -14,3 +14,11 @@ hourly-task:
   script:
     - echo "Running hourly task at $(date)"
     - echo "Performing maintenance or data refresh"
+
+# Echo the current time on every branch
+every-branch:
+  stage: scheduled
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+  script:
+    - echo "Running on every branch at $(date)"
