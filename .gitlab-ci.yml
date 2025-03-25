@@ -1,0 +1,30 @@
+image: python:3.11
+
+# Global stages for the pipeline
+stages:
+  - scheduled
+
+# Echo the current time on every branch
+litmus-test:
+  stage: scheduled
+  script:
+    - python -m venv venv
+    - source venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install requests
+    - |
+      python benchmark.py \
+        "$LITMUS_BASE_URL" \
+        "gitlab-run" \
+        "${ENDPOINT}" \
+        "${TEST_SUITES:-aiguardian-baseline-tests}" \
+        "${NUM_OF_PROMPTS:-5}" \
+        "$LITMUS_API_KEY" \
+        "${INTERVAL:-10}" \
+        "${TIMEOUT:-600}"
+  artifacts:
+    paths:
+      - litmus_test_results/
+    expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
