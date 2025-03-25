@@ -37,7 +37,7 @@ litmus-test-dev:
         "${TIMEOUT:-180}"
   artifacts:
     paths:
-      - litmus_dev_test_results/
+      - litmus_test_results/
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
