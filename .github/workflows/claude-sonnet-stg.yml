@@ -35,7 +35,7 @@ jobs:
             "60" \
             "${{ secrets.LITMUS_API_KEY }}"\
             "${{ vars.INTERVAL || '10' }}" \
-            "600"
+            "1200"
 
       - name: Upload Litmus Test Results
         uses: actions/upload-artifact@v4
