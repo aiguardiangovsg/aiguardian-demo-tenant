@@ -1,4 +1,4 @@
-name: stg - GPT 4o Litmus Test
+name: stg - GPT 4o mini Litmus Test
 
 on:
   schedule:
