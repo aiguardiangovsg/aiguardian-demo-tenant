@@ -1,8 +1,8 @@
-name: dev - Govtext Litmus Test
+name: dev - Claude Haiku Litmus Test
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Every Day at 8am SGT
+    - cron: "0 0 * * MON-FRI" # Every weekday at 8am SGT
   workflow_dispatch: {}
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: "Litmus Test - 12fdde24-govtext - aiguardian-baseline-tests - 60"
+      - name: "Litmus Test"
         shell: bash
         env:
           DEBUG: "FALSE"
@@ -30,12 +30,12 @@ jobs:
           python benchmark.py \
             "${{ vars.DEV_LITMUS_BASE_URL }}" \
             "github-run" \
-            "12fdde24-govtext" \
+            "claude-3-haiku-1" \
             "aiguardian-baseline-tests" \
-            "60"\
+            "20"\
             "${{ secrets.DEV_LITMUS_API_KEY }}"\
             "${{ vars.INTERVAL || '10' }}" \
-            "1800"
+            "300"
 
       - name: Upload Litmus Test Results
         uses: actions/upload-artifact@v4
