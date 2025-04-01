@@ -3,7 +3,24 @@ name: stg - Claude Haiku Litmus Test
 on:
   schedule:
     - cron: "0 0 * * MON" # Every Monday 8am SGT
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      endpoint:
+        description: "Endpoint Name"
+        default: "claude-3-haiku-1"
+        required: false
+      test_suites:
+        description: "Test Suites (comma-separated)"
+        default: "aiguardian-baseline-tests"
+        required: false
+      num_of_prompts:
+        description: "Number of Prompts"
+        default: "60"
+        required: false
+      timeout:
+        description: "Timeout (in seconds)"
+        default: "600"
+        required: false
 
 jobs:
   run-litmus-test:
@@ -30,12 +47,12 @@ jobs:
           python benchmark.py \
             "${{ vars.LITMUS_BASE_URL }}" \
             "github-run" \
-            "claude-3-haiku-1" \
-            "aiguardian-baseline-tests" \
-            "60" \
+            "${{ github.event.inputs.endpoint || 'claude-3-haiku-1' }}" \
+            "${{ github.event.inputs.test_suites || 'aiguardian-baseline-tests' }}" \
+            "${{ github.event.inputs.num_of_prompts || '60' }}" \
             "${{ secrets.LITMUS_API_KEY }}"\
             "${{ vars.INTERVAL || '10' }}" \
-            "600"
+            "${{ github.event.inputs.timeout || '600' }}"
 
       - name: Upload Litmus Test Results
         uses: actions/upload-artifact@v4
