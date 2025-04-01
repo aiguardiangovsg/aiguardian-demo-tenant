@@ -30,7 +30,7 @@ jobs:
           python benchmark.py \
             "${{ vars.DEV_LITMUS_BASE_URL }}" \
             "github-run" \
-            "claude-3-haiku-1" \
+            "01d7dba1-claude-3-haiku-1" \
             "aiguardian-baseline-tests" \
             "20"\
             "${{ secrets.DEV_LITMUS_API_KEY }}"\
