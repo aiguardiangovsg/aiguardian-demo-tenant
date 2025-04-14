@@ -17,6 +17,10 @@ on:
         description: "Number of Prompts"
         default: "60"
         required: false
+      api_key:
+        description: "key"
+        default: "abcd"
+        required: false
       timeout:
         description: "Timeout (in seconds)"
         default: "600"
@@ -50,6 +54,7 @@ jobs:
             "${{ github.event.inputs.endpoint || '01d7dba1-claude-3-haiku-1' }}" \
             "${{ github.event.inputs.test_suites || 'aiguardian-baseline-tests' }}" \
             "${{ github.event.inputs.num_of_prompts || '20' }}" \
+            "${{ github.event.inputs.api_key || secrets.DEV_LITMUS_API_KEY }}"\
             "${{ secrets.LITMUS_API_KEY }}"\
             "${{ vars.INTERVAL || '10' }}" \
             "${{ github.event.inputs.timeout || '300' }}"
